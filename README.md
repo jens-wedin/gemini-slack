@@ -77,8 +77,20 @@ on:
 ```
 
 ### 3. Verify or Trigger Manually
-- **Automatic**: After pushing your code and secrets, look at the **Actions** tab in your repository to see pending and past runs.
-- **Manual**: You can also trigger a run anytime by going to the **Actions** tab, selecting "Weekly Slack Summary", and clicking **Run workflow**.
 
-> [!TIP]
-> Make sure the bot is **invited** to all participating channels using `/invite @Gemini Summarizer`, or it will fail to read the messages!
+#### How to run a summary right now (Manual Trigger):
+1. Navigate to the **Actions** tab at the top of your GitHub repository.
+2. In the left-hand menu, select the workflow named **"Weekly Slack Summary"**.
+3. You will see a banner that says: `"This workflow has a workflow_dispatch trigger."`
+4. Click the **Run workflow** dropdown button on the right.
+5. Click the green **Run workflow** button.
+6. The job will start in a few seconds. You can click on the running job to watch the logs and see the summary be generated!
+
+#### How to verify the schedule (Cron):
+- The workflow is set to run automatically at **09:00 UTC every Monday**.
+- On the **Actions > Weekly Slack Summary** page, GitHub will show a small clock icon and the text "Scheduled" for the next upcoming run.
+- Note: GitHub Action schedules can sometimes be delayed by 5-15 minutes depending on GitHub's internal queue.
+
+> [!IMPORTANT]
+> **Invite the Bot**: The bot cannot read messages in any channel unless it has been added. In every channel you want to summarize, type:
+> `/invite @Gemini Summarizer`
