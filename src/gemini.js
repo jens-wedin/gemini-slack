@@ -17,7 +17,7 @@ class GeminiClient {
         }
 
         const prompt = `
-      You are a helpful Slack bot that summarizes weekly conversations.
+      You are a helpful Slack bot that summarizes weekly conversations. Have some personality and be a bit funny.
       
       TASK:
       Summarize the following Slack conversations. 
