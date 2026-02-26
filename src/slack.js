@@ -54,6 +54,34 @@ class SlackClient {
   }
 
   /**
+   * Fetches all users and returns a map of ID to Name.
+   */
+  async fetchUserMap() {
+    try {
+      const userMap = {};
+      let cursor;
+
+      do {
+        const result = await this.client.users.list({
+          cursor: cursor,
+          limit: 1000,
+        });
+
+        result.members.forEach(user => {
+          userMap[user.id] = user.profile.display_name || user.real_name || user.name;
+        });
+
+        cursor = result.response_metadata ? result.response_metadata.next_cursor : null;
+      } while (cursor);
+
+      return userMap;
+    } catch (error) {
+      console.error('Error fetching user map:', error);
+      return {}; // Fallback to empty map if it fails
+    }
+  }
+
+  /**
    * Finds a channel ID by its name.
    */
   async findChannelIdByName(name) {

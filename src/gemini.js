@@ -11,23 +11,36 @@ class GeminiClient {
     /**
      * Summarizes a list of messages.
      */
-    async summarizeMessages(messages) {
-        if (!messages || messages.length === 0) {
+    async summarizeMessages(aggregatedText) {
+        if (!aggregatedText) {
             return "No messages were found for this period.";
         }
 
-        const formattedMessages = messages
-            .filter(msg => !msg.bot_id) // Exclude bot messages by default
-            .map(msg => `${msg.user || 'Unknown User'}: ${msg.text}`)
-            .join('\n');
-
         const prompt = `
-      Summarize the following Slack conversation from the past week. 
-      Identify key topics, decisions made, and any action items. 
-      Keep the summary concise and professional.
+      You are a helpful Slack bot that summarizes weekly conversations.
+      
+      TASK:
+      Summarize the following Slack conversations. 
+      Identify key topics, decisions made, and action items.
+      
+      USER LINKING RULES (CRITICAL):
+      1. You will see users formatted as \`<@ID> (Real Name)\`.
+      2. In your summary, when referring to a user, ALWAYS use the \`<@ID>\` format (e.g., <@U12345>). 
+      3. This ensures they are clickable links in Slack. 
+      4. DO NOT include the "(Real Name)" part in the summary output.
+      
+      FORMATTING RULES for Slack (CRITICAL):
+      1. Use Slack's "mrkdwn" syntax.
+      2. Use *bold* (single asterisk) for bolding, NOT **bold**.
+      3. Use > for blockquotes.
+      4. Use - or • for bullet points.
+      5. Do NOT use # for headers. Use *Bold Headers* instead.
+      6. Use \`code\` for technical terms or small snippets.
+      7. Keep the tone professional but friendly.
+      8. Mention specific users by name where relevant.
       
       Conversations:
-      ${formattedMessages}
+      ${aggregatedText}
     `;
 
         const modelsToTry = [

@@ -28,8 +28,9 @@ class Summarizer {
                 }
             }
 
-            // 1. Fetch channels
+            // 1. Fetch channels and users
             const allChannels = await this.slack.fetchChannels();
+            const userMap = await this.slack.fetchUserMap();
 
             // Resolve excluded channel names to IDs
             const resolvedExclusions = new Set(this.excludedChannels);
@@ -67,18 +68,31 @@ class Summarizer {
             }
 
             // 3. Summarize with Gemini
-            // Note: For now we'll do one combined summary, but for very large teams
-            // we might want to do it per channel or group.
+            // We provide <@ID> (Real Name) to Gemini so it has context but can output the link tags
             const aggregatedText = allMessages
-                .map(ch => `--- Channel: #${ch.channelName} ---\n` + ch.messages
-                    .filter(m => !m.bot_id && m.text)
-                    .map(m => `${m.user}: ${m.text}`)
-                    .join('\n')
-                )
+                .map(ch => {
+                    const channelHeader = `--- Channel: #${ch.channelName} ---\n`;
+                    const messagesJoined = ch.messages
+                        .filter(m => !m.bot_id && m.text)
+                        .map(m => {
+                            const userName = userMap[m.user] || 'Unknown';
+                            let processedText = m.text;
+
+                            // Annotate mentions with names for Gemini context: <@ID> -> <@ID> (Real Name)
+                            const mentionRegex = /<@([A-Z0-9]+)>/g;
+                            processedText = processedText.replace(mentionRegex, (match, userId) => {
+                                return userMap[userId] ? `<@${userId}> (${userMap[userId]})` : match;
+                            });
+
+                            return `<@${m.user}> (${userName}): ${processedText}`;
+                        })
+                        .join('\n');
+                    return channelHeader + messagesJoined;
+                })
                 .join('\n\n');
 
             console.log('Generating summary with Gemini...');
-            const summary = await this.gemini.summarizeMessages([{ text: aggregatedText }]); // Wrap in simple structure for client
+            const summary = await this.gemini.summarizeMessages(aggregatedText);
 
             // 4. Post back to Slack
             const finalMessage = `*Weekly Slack Summary (Previous 7 Days)*\n\n${summary}`;
