@@ -11,8 +11,13 @@ const config = {
 };
 
 // Validate config
-if (!config.slackToken || !config.geminiApiKey || !config.summaryChannelId) {
-    console.error('Error: Missing required environment variables (SLACK_BOT_TOKEN, GEMINI_API_KEY, SUMMARY_CHANNEL_ID).');
+const missingVars = [];
+if (!config.slackToken) missingVars.push('SLACK_BOT_TOKEN');
+if (!config.geminiApiKey) missingVars.push('GEMINI_API_KEY');
+if (!config.summaryChannelId) missingVars.push('SUMMARY_CHANNEL_ID');
+
+if (missingVars.length > 0) {
+    console.error(`Error: Missing required environment variables: ${missingVars.join(', ')}`);
     process.exit(1);
 }
 
@@ -31,7 +36,15 @@ cron.schedule(config.cronSchedule, async () => {
 // Optional: Run immediately if a flag is provided
 if (process.argv.includes('--run-now')) {
     console.log('Running summary immediately...');
-    summarizer.runWeeklySummary();
+    summarizer.runWeeklySummary()
+        .then(() => {
+            console.log('Immediate run completed successfully.');
+            process.exit(0);
+        })
+        .catch((error) => {
+            console.error('Immediate run failed:', error);
+            process.exit(1);
+        });
+} else {
+    console.log('Gemini-Slack Summarizer is running.');
 }
-
-console.log('Gemini-Slack Summarizer is running.');

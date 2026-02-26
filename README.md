@@ -55,12 +55,30 @@ Use the provided `manifest.json` to quickly set up your Slack app:
 3. Install the app to your workspace.
 4. **Important**: Invite the bot to any channel you want it to read or post to by typing `/invite @Gemini Summarizer`.
 
-## GitHub Actions Deployment
+## GitHub Actions Deployment (Cloud Scheduling)
 
-1. Push this project to a GitHub repository.
-2. Add your `.env` values as **Secrets** in GitHub (Settings > Secrets and variables > Actions).
-3. The bot will automatically run every Monday morning.
+The project includes a GitHub Action workflow in `.github/workflows/weekly-summary.yml` that handles the weekly scheduling automatically.
 
-## License
+### 1. Set Up GitHub Secrets
+1. Go to your repository on GitHub.
+2. Navigate to **Settings > Secrets and variables > Actions**.
+3. Create the following **Repository secrets**:
+   - `SLACK_BOT_TOKEN`: Your `xoxb-` token.
+   - `GEMINI_API_KEY`: Your Google Gemini key.
+   - `SUMMARY_CHANNEL_ID`: `hey-summarize` (or your channel's ID).
+   - `EXCLUDED_CHANNELS`: `recruitment` (or any channels to skip).
 
-ISC
+### 2. How the Cron Job Works
+The bot is configured to run every Monday at **09:00 UTC**. You can customize this by editing the `cron` line in `.github/workflows/weekly-summary.yml`:
+```yaml
+on:
+  schedule:
+    - cron: '0 9 * * 1' # 'Minute Hour Day Month DayOfWeek'
+```
+
+### 3. Verify or Trigger Manually
+- **Automatic**: After pushing your code and secrets, look at the **Actions** tab in your repository to see pending and past runs.
+- **Manual**: You can also trigger a run anytime by going to the **Actions** tab, selecting "Weekly Slack Summary", and clicking **Run workflow**.
+
+> [!TIP]
+> Make sure the bot is **invited** to all participating channels using `/invite @Gemini Summarizer`, or it will fail to read the messages!
