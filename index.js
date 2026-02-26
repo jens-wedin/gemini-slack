@@ -3,11 +3,15 @@ const cron = require('node-cron');
 const Summarizer = require('./src/summarizer');
 
 const config = {
-    slackToken: process.env.SLACK_BOT_TOKEN,
-    geminiApiKey: process.env.GEMINI_API_KEY,
-    summaryChannelId: process.env.SUMMARY_CHANNEL_ID,
-    excludedChannels: (process.env.EXCLUDED_CHANNELS || '').split(',').map(id => id.trim()).filter(id => id),
-    cronSchedule: process.env.CRON_SCHEDULE || '0 9 * * 1', // Default: Monday at 9 AM
+    // Trim whitespace to prevent ERR_INVALID_CHAR in headers (common with GH Secrets)
+    slackToken: (process.env.SLACK_BOT_TOKEN || '').trim().replace(/^["'](.+)["']$/, '$1'),
+    geminiApiKey: (process.env.GEMINI_API_KEY || '').trim().replace(/^["'](.+)["']$/, '$1'),
+    summaryChannelId: (process.env.SUMMARY_CHANNEL_ID || '').trim().replace(/^["'](.+)["']$/, '$1'),
+    excludedChannels: (process.env.EXCLUDED_CHANNELS || '')
+        .split(',')
+        .map(id => id.trim().replace(/^["'](.+)["']$/, '$1'))
+        .filter(id => id),
+    cronSchedule: (process.env.CRON_SCHEDULE || '0 9 * * 1').trim(),
 };
 
 // Validate config
