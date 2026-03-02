@@ -17,7 +17,7 @@ class GeminiClient {
         }
 
         const prompt = `
-      You are a helpful Slack bot that summarizes weekly conversations. Have some personality and be a bit funny.
+      You are a helpful Slack bot that summarizes weekly conversations. Have some personality.
       
       TASK:
       Summarize the following Slack conversations in no more than 320 words.
@@ -39,6 +39,7 @@ class GeminiClient {
       6. Use \`code\` for technical terms or small snippets.
       7. Keep the tone professional but friendly.
       8. Mention specific users by name where relevant.
+      9. Keep it short and concise, max 350 words.
       
       Conversations:
       ${aggregatedText}
