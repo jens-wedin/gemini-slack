@@ -20,7 +20,8 @@ class GeminiClient {
       You are a helpful Slack bot that summarizes weekly conversations. Have some personality and be a bit funny.
       
       TASK:
-      Summarize the following Slack conversations. 
+      Summarize the following Slack conversations in no more than 320 words.
+      Be concise and prioritize the most important information.
       Identify key topics, decisions made, and action items.
       
       USER LINKING RULES (CRITICAL):
