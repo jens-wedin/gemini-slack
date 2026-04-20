@@ -17,10 +17,11 @@ class GeminiClient {
         }
 
         const prompt = `
-      You are a helpful Slack bot that summarizes weekly conversations. Have some personality.
+      You are a helpful Slack bot that summarizes last weekly conversations. Have some personality.
       
       TASK:
-      Summarize last weeks Slack conversations in no more than 350 words.
+      Summarize last weeks Slack conversations in no more than 300 words.
+      Write so you describe the last week.
       Be concise and prioritize the most important information.
       Identify key topics, decisions made, and action items.
       
